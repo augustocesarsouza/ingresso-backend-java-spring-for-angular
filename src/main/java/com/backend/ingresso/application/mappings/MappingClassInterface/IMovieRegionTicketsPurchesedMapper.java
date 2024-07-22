@@ -1,0 +1,10 @@
+package com.backend.ingresso.application.mappings.MappingClassInterface;
+
+import com.backend.ingresso.application.dto.MovieRegionTicketsPurchesedDTO;
+import com.backend.ingresso.domain.entities.MovieRegionTicketsPurchesed;
+
+public interface IMovieRegionTicketsPurchesedMapper {
+    MovieRegionTicketsPurchesedDTO movieRegionTicketsPurchesedToMovieRegionTicketsPurchesedDTO(MovieRegionTicketsPurchesed movieRegionTicketsPurchesed);
+    MovieRegionTicketsPurchesedDTO movieRegionTicketsPurchesedToMovieRegionTicketsPurchesedDtoUpdate(MovieRegionTicketsPurchesed movieRegionTicketsPurchesed);
+    MovieRegionTicketsPurchesed movieRegionTicketsPurchesedDtoToMovieRegionTicketsPurchesed(MovieRegionTicketsPurchesedDTO movieRegionTicketsPurchesedDTO);
+}
