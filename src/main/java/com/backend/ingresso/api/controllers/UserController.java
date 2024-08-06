@@ -22,6 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -62,6 +63,28 @@ public class UserController {
         return ResponseEntity.badRequest().body(result);
     }
 
+    @GetMapping("/public/user/check-email-already-exists/{cpfOrEmail}")
+    public ResponseEntity<ResultService<Map<String, Object>>> checkEmailAlreadyExists(@PathVariable String cpfOrEmail){
+        var result = userManagementService.checkEmailAlreadyExists(cpfOrEmail);
+
+        if(result.IsSuccess){
+            return ResponseEntity.ok(result);
+        }
+
+        return ResponseEntity.badRequest().body(result);
+    }
+
+    @GetMapping("/public/user/check-cpf-already-exists/{cpf}")
+    public ResponseEntity<ResultService<Map<String, Object>>> checkCpfAlreadyExists(@PathVariable String cpf){
+        var result = userManagementService.checkIfAlreadyExistCpf(cpf);
+
+        if(result.IsSuccess){
+            return ResponseEntity.ok(result);
+        }
+
+        return ResponseEntity.badRequest().body(result);
+    }
+
     @GetMapping("/public/user/confirm-token/{token}")
     public ResponseEntity<ResultService<TokenAlreadyVisualizedDTO>> getConfirmToken(@PathVariable String token){
         var result = userConfirmationService.GetConfirmToken(token);
@@ -84,6 +107,28 @@ public class UserController {
         return ResponseEntity.badRequest().body(result);
     }
 
+    @GetMapping("/public/user/verify-confirmed-user-email/{code}/{guidId}")
+    public ResponseEntity<ResultService<TokenAlreadyVisualizedDTO>> verifyToCreateAccountCheckout(@PathVariable String code, @PathVariable String guidId){
+        var result = userAuthenticationService.verifyToCreateAccountCheckout(Integer.parseInt(code), guidId);
+
+        if(result.IsSuccess){
+            return ResponseEntity.ok(result);
+        }
+
+        return ResponseEntity.badRequest().body(result);
+    }
+
+    @GetMapping("/public/user/send-token-email-change-password/{email}")
+    public ResponseEntity<ResultService<String>> sendTokenEmailChangePassword(@PathVariable String email){
+        var result = userManagementService.sendTokenEmailChangePassword(email);
+
+        if(result.IsSuccess){
+            return ResponseEntity.ok(result);
+        }
+
+        return ResponseEntity.badRequest().body(result);
+    }
+
     @PostMapping("/public/user/resend-code")
     public ResponseEntity<ResultService<String>> resendCode(@RequestBody UserDTO userDTO){
         var result = userAuthenticationService.resendCode(userDTO);
@@ -98,6 +143,17 @@ public class UserController {
     @PostMapping("/public/user/create")
     public ResponseEntity<ResultService<UserCreateValidatorDTO>> create(@Valid @RequestBody UserCreateValidatorDTO userCreateValidatorDTO, BindingResult resultValid){
         var result = userManagementService.create(userCreateValidatorDTO, resultValid);
+
+        if(result.IsSuccess){
+            return ResponseEntity.ok(result);
+        }
+
+        return ResponseEntity.badRequest().body(result);
+    }
+
+    @PostMapping("/public/user/create-account-to-checkout")
+    public ResponseEntity<ResultService<UserCreateValidatorDTO>> createUserToCheckout(@Valid @RequestBody UserCreateValidatorDTO userCreateValidatorDTO, BindingResult resultValid){
+        var result = userManagementService.createUserToCheckout(userCreateValidatorDTO, resultValid);
 
         if(result.IsSuccess){
             return ResponseEntity.ok(result);

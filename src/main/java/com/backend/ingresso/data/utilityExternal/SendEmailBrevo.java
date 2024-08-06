@@ -32,7 +32,7 @@ public class SendEmailBrevo implements ISendEmailBrevo {
         try {
             TransactionalEmailsApi api = new TransactionalEmailsApi();
             SendSmtpEmailSender sender = new SendSmtpEmailSender();
-            sender.setEmail("augustocesarsantana90@gmail.com");
+            sender.setEmail("augustocesarsantana53@gmail.com");
             sender.setName("augusto");
             List<SendSmtpEmailTo> toList = new ArrayList<>();
             SendSmtpEmailTo to = new SendSmtpEmailTo();
@@ -68,7 +68,7 @@ public class SendEmailBrevo implements ISendEmailBrevo {
         try {
             TransactionalEmailsApi api = new TransactionalEmailsApi();
             SendSmtpEmailSender sender = new SendSmtpEmailSender();
-            sender.setEmail("augustocesarsantana90@gmail.com");
+            sender.setEmail("augustocesarsantana53@gmail.com");
             sender.setName("augusto");
             List<SendSmtpEmailTo> toList = new ArrayList<>();
             SendSmtpEmailTo to = new SendSmtpEmailTo();

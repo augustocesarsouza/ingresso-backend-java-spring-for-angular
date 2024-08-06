@@ -24,6 +24,11 @@ public interface UserRepositoryJPA extends JpaRepository<User, UUID> {
             "FROM User AS u " +
             "WHERE u.Email = :email")
     User getUserByEmail(String email);
+    @Query("SELECT new com.backend.ingresso.domain.entities." +
+            "User(u.Id, null, null, null, null, null) " +
+            "FROM User AS u " +
+            "WHERE u.Cpf = :cpf")
+    User getUserByCpf(String cpf);
 
     @Query("SELECT new com.backend.ingresso.domain.entities." +
             "User(u.Id, u.Name, u.Email, u.Cpf, u.PasswordHash, null) " +
@@ -55,7 +60,16 @@ public interface UserRepositoryJPA extends JpaRepository<User, UUID> {
             "WHERE u.Email = :email")
     User getUserByEmailInfoEmailPasswordHash(String email);
 
-    //u.PasswordHash
+    @Query("SELECT new com.backend.ingresso.domain.entities." +
+            "User(null, null, u.Email, null, null, null) " +
+            "FROM User AS u " +
+            "WHERE u.Email = :email")
+    User checkEmailAlreadyExists(String email);
+    @Query("SELECT new com.backend.ingresso.domain.entities." +
+            "User(u.Id, u.Name, u.Email, null, null, null) " +
+            "FROM User AS u " +
+            "WHERE u.Email = :email")
+    User getByEmailInfoForSendTokenChangePassword(String email);
     @Query("SELECT new com.backend.ingresso.domain.entities." +
             "User(null, null, null, null, u.PasswordHash, null) " +
             "FROM User AS u " +

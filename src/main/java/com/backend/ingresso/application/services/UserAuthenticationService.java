@@ -1,5 +1,6 @@
 package com.backend.ingresso.application.services;
 
+import com.backend.ingresso.application.dto.TokenAlreadyVisualizedDTO;
 import com.backend.ingresso.application.dto.UserDTO;
 import com.backend.ingresso.application.mappings.MappingClassInterface.IUserMapper;
 import com.backend.ingresso.application.mappings.MappingClassInterface.IUserPermissionMapper;
@@ -23,6 +24,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -130,6 +132,34 @@ public class UserAuthenticationService implements IUserAuthenticationService {
 //            return ResultService.Fail("error when confirming code");
 //        }
         return ResultService.Ok("ok confirmed");
+    }
+
+    @Override
+    @Transactional
+    public ResultService<TokenAlreadyVisualizedDTO> verifyToCreateAccountCheckout(int code, String guidId) {
+        //Descomentar depois quando for mandar CODIGO para Email
+        if(dictionaryCode.getKeyDictionary(guidId) == code){
+            dictionaryCode.removeKeyDictionary(guidId);
+
+            var user = userRepository.getUserByIdCheckUserExists(UUID.fromString(guidId));
+
+            if(user == null)
+                return ResultService.Fail("user not found");
+
+            if(user.getConfirmEmail())
+                return ResultService.Ok("User has been confirmed email");
+
+            user.confirmEmail(true);
+
+            var userDatabaseUpdate = userRepository.update(user);
+            if(userDatabaseUpdate == null)
+                return ResultService.Fail("error updating user in database");
+
+            return ResultService.Ok(new TokenAlreadyVisualizedDTO(0,"all right"));
+        }else {
+            return ResultService.Fail("error when confirming code");
+        }
+//        return ResultService.Ok("ok confirmed");
     }
 
     @Override

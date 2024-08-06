@@ -24,8 +24,6 @@ public class UserDTO {
     private String Token;
     @JsonProperty("codeSentSuccessfullyEmail")
     private Boolean EmailSendSuccessfully;
-//    @JsonProperty("code")//só para teste
-//    private int Code;
 //    @JsonProperty("codeSentSuccessfullyEmail")
 //    private Boolean CodeSentSuccessfullyEmail;
 

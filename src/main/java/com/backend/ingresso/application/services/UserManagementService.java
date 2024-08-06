@@ -13,6 +13,7 @@ import com.backend.ingresso.application.services.interfaces.IAdditionalInfoUserS
 import com.backend.ingresso.application.services.interfaces.IUserManagementService;
 import com.backend.ingresso.application.util.ValidateUUID;
 import com.backend.ingresso.application.util.interfaces.IBCryptPasswordEncoderUtil;
+import com.backend.ingresso.application.util.interfaces.IDictionaryCode;
 import com.backend.ingresso.data.utilityExternal.Interface.ISendEmailUser;
 import com.backend.ingresso.domain.InfoErrors.InfoErrors;
 import com.backend.ingresso.domain.entities.Permission;
@@ -35,10 +36,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
@@ -51,11 +49,12 @@ public class UserManagementService implements IUserManagementService {
     private final IBCryptPasswordEncoderUtil bCryptPasswordEncoder;
     private final ISendEmailUser sendEmailUser;
     private final AuthenticationManager authenticationManager;
+    private final IDictionaryCode dictionaryCode;
     private final IUserPermissionRepository userPermissionRepository;
     @Autowired
     public UserManagementService(IUserRepository userRepository, IValidateErrorsDTO validateErrorsDTO, IUserMapper userMapper, IAdditionalInfoUserService additionalInfoUserService,
                                  IBCryptPasswordEncoderUtil bCryptPasswordEncoder, IAdditionalInfoUserMapper additionalInfoUserMapper,
-                                 ISendEmailUser sendEmailUser, AuthenticationManager authenticationManager, IUserPermissionRepository userPermissionRepository) {
+                                 ISendEmailUser sendEmailUser, AuthenticationManager authenticationManager, IDictionaryCode dictionaryCode, IUserPermissionRepository userPermissionRepository) {
         this.userRepository = userRepository;
         this.validateErrorsDTO = validateErrorsDTO;
         this.userMapper = userMapper;
@@ -64,6 +63,7 @@ public class UserManagementService implements IUserManagementService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.sendEmailUser = sendEmailUser;
         this.authenticationManager = authenticationManager;
+        this.dictionaryCode = dictionaryCode;
         this.userPermissionRepository = userPermissionRepository;
     }
 
@@ -150,6 +150,148 @@ public class UserManagementService implements IUserManagementService {
 
     @Override
     @Transactional
+    public ResultService<UserCreateValidatorDTO> createUserToCheckout(UserCreateValidatorDTO userCreateValidatorDTO, BindingResult result) {
+        // ideia futura colocar aqui quando criar um usuario salvar na tabela 'tb_user_permissions' uma permissao padrão já para os usuarios
+        if(result.hasErrors()){
+            var errorsDTO = result.getAllErrors();
+            var errors = validateErrorsDTO.ValidateDTO(errorsDTO);
+
+            return ResultService.RequestError("error validate DTO", errors);
+        }
+
+        User userExist = userRepository.checkUserExits(userCreateValidatorDTO.getEmail(), userCreateValidatorDTO.getCpf());
+
+        if(userExist != null)
+            return ResultService.Fail("email or cpf already exist");
+
+        try {
+            String passwordEncoder = bCryptPasswordEncoder.encodePassword(userCreateValidatorDTO.getPassword());
+
+            UUID uuid_user_id = UUID.randomUUID();
+
+            var userToEmail = new User();
+            userToEmail.setId(uuid_user_id);
+            userToEmail.setName(userCreateValidatorDTO.getName());
+            userToEmail.setEmail(userCreateValidatorDTO.getEmail());
+
+            int randomCode = generateRandomNumber();
+            dictionaryCode.putKeyValueDictionary(uuid_user_id.toString(), randomCode);
+            InfoErrors<String> resultSendCodeEmail = sendEmailUser.sendCodeRandom(userToEmail, randomCode);
+
+            userCreateValidatorDTO.setIdPasswordHashConfirmEmail(uuid_user_id, passwordEncoder, false);
+
+            UUID uuid_additionalInfoUserId = UUID.randomUUID();
+
+            String birthDate = userCreateValidatorDTO.getBirthDateString();
+            String regex = "\\d{2}/\\d{2}/\\d{4}";
+            Pattern pattern = Pattern.compile(regex);
+            AdditionalInfoUserDTO additionalInfoUserDTO;
+
+            if(pattern.matcher(birthDate).matches()){
+                DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+                DateTime dateBirthDate = DateTime.parse(birthDate, formatter);
+
+                // Convertendo DateTime para Date
+                Date utilDate = dateBirthDate.toDate();
+
+                // Criando um Timestamp com o java.util.Date
+                Timestamp timestamp = new Timestamp(utilDate.getTime());
+
+                additionalInfoUserDTO = new AdditionalInfoUserDTO(uuid_additionalInfoUserId, timestamp, userCreateValidatorDTO.getGender(),
+                        userCreateValidatorDTO.getPhone(), userCreateValidatorDTO.getCep(), userCreateValidatorDTO.getLogradouro(), userCreateValidatorDTO.getNumero(),
+                        userCreateValidatorDTO.getComplemento(), userCreateValidatorDTO.getReferencia(), userCreateValidatorDTO.getBairro(),
+                        userCreateValidatorDTO.getEstado(), userCreateValidatorDTO.getCidade(), uuid_user_id);
+            }else{
+                additionalInfoUserDTO = new AdditionalInfoUserDTO(uuid_additionalInfoUserId, null, userCreateValidatorDTO.getGender(),
+                        userCreateValidatorDTO.getPhone(), userCreateValidatorDTO.getCep(), userCreateValidatorDTO.getLogradouro(), userCreateValidatorDTO.getNumero(),
+                        userCreateValidatorDTO.getComplemento(), userCreateValidatorDTO.getReferencia(), userCreateValidatorDTO.getBairro(),
+                        userCreateValidatorDTO.getEstado(), userCreateValidatorDTO.getCidade(), uuid_user_id);
+            }
+
+            User userCreate = userRepository.create(userMapper.userCreateValidatorDtoToUser(userCreateValidatorDTO));
+
+            UserCreateValidatorDTO userCreateDTO = userMapper.userToUserCreateValidatorDto(userCreate);
+            userCreateDTO.setEmailSendSuccessfully(resultSendCodeEmail.IsSuccess);
+            userCreateDTO.setId(uuid_user_id);
+
+            if(userCreate == null)
+                return ResultService.Fail("error when create user");
+
+            BindingResult resultValid = new BeanPropertyBindingResult(additionalInfoUserDTO, "additionalInfoUserDTO");
+            CreateInfoUser(additionalInfoUserDTO, resultValid);
+
+            return ResultService.Ok(userCreateDTO);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
+    }
+
+    private static int generateRandomNumber(){
+        Random random = new Random();
+        return random.nextInt(900000) + 100000;
+    }
+
+    @Override
+    @Transactional
+    public ResultService<Map<String, Object>> checkEmailAlreadyExists(String cpfOrEmail){
+        String regex = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}";
+        Pattern pattern = Pattern.compile(regex);
+
+        try {
+            Map<String, Object> result = new HashMap<>();
+
+            if(cpfOrEmail.contains("@")){
+                User userCheck = userRepository.checkEmailAlreadyExists(cpfOrEmail);
+
+                if(userCheck != null){
+                    result.put("userExists", true);
+                }else {
+                    result.put("userExists", false);
+                }
+
+                return ResultService.Ok(result);
+
+            }else if(pattern.matcher(cpfOrEmail).matches()){
+                return null;
+            }
+        }catch (Exception ex){
+            String message = ex.getMessage();
+            return ResultService.Fail(message);
+        }
+
+        return ResultService.Fail("error email or cpf not informed");
+    }
+
+    @Override
+    @Transactional
+    public ResultService<Map<String, Object>> checkIfAlreadyExistCpf(String cpf){
+        String regex = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}";
+        Pattern pattern = Pattern.compile(regex);
+
+        try {
+            Map<String, Object> result = new HashMap<>();
+
+            if(pattern.matcher(cpf).matches()){
+                User userCheckExist = userRepository.checkIfAlreadyExistCpf(cpf);
+
+                if(userCheckExist != null){
+                    result.put("cpfExists", true);
+                }else {
+                    result.put("cpfExists", false);
+                }
+
+                return ResultService.Ok(result);
+            }else {
+                return ResultService.Fail("Error Cpf Not Valid");
+            }
+        }catch (Exception ex){
+            String message = ex.getMessage();
+            return ResultService.Fail(message);
+        }
+    }
+
+    @Override
+    @Transactional
     public ResultService<UserDTO> update(UserUpdateValidatorDTO userUpdateValidatorDTO, BindingResult resultValid, String password) {
         if(userUpdateValidatorDTO == null)
             return ResultService.Fail("obj null");
@@ -199,10 +341,10 @@ public class UserManagementService implements IUserManagementService {
             if(user == null)
                 return ResultService.Fail("user not found");
 
-            var usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getEmail(), userPasswordChangeDTO.getPasswordCurrent());
-            Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-            if(!authenticate.isAuthenticated())
-                return ResultService.Fail("password is not valid");
+//            var usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getEmail(), userPasswordChangeDTO.getPasswordCurrent());
+//            Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+//            if(!authenticate.isAuthenticated())
+//                return ResultService.Fail("password is not valid");
 
             String passwordEncoder = bCryptPasswordEncoder.encodePassword(userPasswordChangeDTO.getNewPassword());
 
@@ -247,5 +389,31 @@ public class UserManagementService implements IUserManagementService {
 
     private InfoErrors<String> sendMessageEmail(User user){
         return sendEmailUser.sendEmail(user);
+    }
+
+    @Override
+    @Transactional
+    public ResultService<String> sendTokenEmailChangePassword(String email) {
+        if(email == null)
+            return ResultService.Fail("Email Null");
+
+        if(email.isEmpty())
+            return ResultService.Fail("Email empty 0");
+
+        try {
+            var user = userRepository.getByEmailInfoForSendTokenChangePassword(email);
+
+            if(user == null)
+                return ResultService.Fail("user not found");
+
+            var resultSend = sendEmailUser.sendTokenForEmailChangePassword(user);
+
+            if(!resultSend.IsSuccess)
+                return ResultService.Fail(resultSend.Message);
+
+            return ResultService.Ok(resultSend.Message);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
     }
 }

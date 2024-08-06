@@ -21,12 +21,23 @@ public class UserRepository implements IUserRepository {
     public User checkUserExits(String email, String cpf) {
         return userRepositoryJPA.checkUserExits(email, cpf);
     }
-
+    @Override
+    public User checkIfAlreadyExistCpf(String cpf) {
+        return userRepositoryJPA.getUserByCpf(cpf);
+    }
     @Override
     public User getUserByEmail(String email) {
         return userRepositoryJPA.getUserByEmail(email);
     }
 
+    @Override
+    public User checkEmailAlreadyExists(String email) {
+        return userRepositoryJPA.checkEmailAlreadyExists(email);
+    }
+    @Override
+    public User getByEmailInfoForSendTokenChangePassword(String email) {
+        return userRepositoryJPA.getByEmailInfoForSendTokenChangePassword(email);
+    }
     @Override
     public User getUserByCpf(String cpf) {
         return userRepositoryJPA.GetUserByCpf(cpf);

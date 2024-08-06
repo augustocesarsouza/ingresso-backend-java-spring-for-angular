@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import java.util.UUID;
 
 public class UserPasswordChangeDTO {
-    @NotEmpty(message = "passwordCurrent should not be empty")
+//    @NotEmpty(message = "passwordCurrent should not be empty")
     @JsonProperty("passwordCurrent")
     private String PasswordCurrent;
     @NotEmpty(message = "newPassword should not be empty")
