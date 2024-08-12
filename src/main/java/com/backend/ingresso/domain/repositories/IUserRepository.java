@@ -11,6 +11,7 @@ public interface IUserRepository {
     public User checkIfAlreadyExistCpf(String cpf);
     public User checkEmailAlreadyExists(String email);
     public User getByEmailInfoForSendTokenChangePassword(String email);
+    public User getByIdInfoToSentCodeToEmail(UUID userId);
     public User getUserByCpf(String cpf);
     public User getByIdOnlyEmailOrCpfId(UUID guidId);
     public User getUserByIdInfoEmailPasswordHash(UUID guidId);

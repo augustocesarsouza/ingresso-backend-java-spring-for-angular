@@ -59,6 +59,37 @@ public class SendEmailUser implements ISendEmailUser {
         return InfoErrors.Fail("Erro no envio do email, ERROR: " + ex.getMessage());
       }
     }
+    @Override
+    public InfoErrors<String> sendEmailConfirmRegisterUser(User user) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            LocalDateTime currentUtcDateTime = LocalDateTime.now(ZoneOffset.UTC);
+            LocalDateTime expires = currentUtcDateTime.plusMinutes(10);
+            Date expiresDate = Date.from(expires.toInstant(ZoneOffset.UTC));
+
+            String token = JWT.create()
+                    .withClaim("id", user.getId().toString())
+                    .withExpiresAt(expiresDate)
+                    .sign(algorithm);
+
+            String key = "TokenString" + user.getId().toString();
+            String cache = cacheRedisUti.getString(key);
+
+            if(cache == null){
+                cacheRedisUti.setString(key, token, 10, TimeUnit.MINUTES);
+            }
+
+            String url = "http://localhost:4200/my-account/confirm-email/"+token;
+            var resultSend = sendEmailBrevo.sendEmail(user, url);
+
+            if(!resultSend.IsSuccess)
+                return InfoErrors.Fail(resultSend.Message);
+
+            return InfoErrors.Ok("tudo certo com o envio do email");
+        }catch (Exception ex){
+            return InfoErrors.Fail("Erro no envio do email, ERROR: " + ex.getMessage());
+        }
+    }
 
     @Override
     public InfoErrors<String> sendTokenForEmailChangePassword(User user) {

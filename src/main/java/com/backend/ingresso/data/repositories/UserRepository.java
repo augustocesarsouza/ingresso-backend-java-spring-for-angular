@@ -39,6 +39,10 @@ public class UserRepository implements IUserRepository {
         return userRepositoryJPA.getByEmailInfoForSendTokenChangePassword(email);
     }
     @Override
+    public User getByIdInfoToSentCodeToEmail(UUID userId) {
+        return userRepositoryJPA.getByIdInfoToSentCodeToEmail(userId);
+    }
+    @Override
     public User getUserByCpf(String cpf) {
         return userRepositoryJPA.GetUserByCpf(cpf);
     }

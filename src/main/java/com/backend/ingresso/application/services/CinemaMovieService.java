@@ -110,7 +110,7 @@ public class CinemaMovieService implements ICinemaMovieService {
                 return ResultService.Fail("error region not exist");
 
             CinemaMovie cinemaMovie = new CinemaMovie(id, cinemaId, null,
-                    movieId, null, regionId, null, cinemaMovieDTO.getScreeningSchedule());
+                    movieId, null, regionId, null, cinemaMovieDTO.getScreeningSchedule(), null);
 
             CinemaMovie resultCreate = cinemaMovieRepository.create(cinemaMovie);
 

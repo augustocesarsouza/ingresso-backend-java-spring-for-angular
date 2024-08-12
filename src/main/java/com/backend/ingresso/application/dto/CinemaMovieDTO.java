@@ -24,8 +24,10 @@ public class CinemaMovieDTO {
     private RegionDTO regionDTO;
     @Column(name = "screeningSchedule")
     private String ScreeningSchedule;
+    @Column(name = "room")
+    private Integer Room;
 
-    public CinemaMovieDTO(UUID id, UUID cinemaId, CinemaDTO cinema, UUID movieId, MovieDTO movie, UUID regionId, RegionDTO region, String screeningSchedule) {
+    public CinemaMovieDTO(UUID id, UUID cinemaId, CinemaDTO cinema, UUID movieId, MovieDTO movie, UUID regionId, RegionDTO region, String screeningSchedule, Integer room) {
         Id = id;
         CinemaId = cinemaId;
         this.cinemaDTO = cinema;
@@ -34,6 +36,7 @@ public class CinemaMovieDTO {
         RegionId = regionId;
         this.regionDTO = region;
         ScreeningSchedule = screeningSchedule;
+        Room = room;
     }
 
     public CinemaMovieDTO() {
@@ -69,5 +72,9 @@ public class CinemaMovieDTO {
 
     public String getScreeningSchedule() {
         return ScreeningSchedule;
+    }
+
+    public Integer getRoom() {
+        return Room;
     }
 }

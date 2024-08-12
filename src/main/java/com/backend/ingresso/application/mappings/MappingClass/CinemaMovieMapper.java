@@ -33,7 +33,7 @@ public class CinemaMovieMapper implements ICinemaMovieMapper {
 
         return new CinemaMovieDTO(cinemaMovie.getId(), cinemaMovie.getCinemaId(), cinemaMapper.cinemaToCinemaDto(cinemaMovie.getCinema()),
                 cinemaMovie.getMovieId(), movieMapper.movieToMovieDto(cinemaMovie.getMovie()),
-                cinemaMovie.getRegionId(),regionMapper.regionToRegionDto(cinemaMovie.getRegion()), cinemaMovie.getScreeningSchedule());
+                cinemaMovie.getRegionId(),regionMapper.regionToRegionDto(cinemaMovie.getRegion()), cinemaMovie.getScreeningSchedule(), cinemaMovie.getRoom());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class CinemaMovieMapper implements ICinemaMovieMapper {
 
         return new CinemaMovie(cinemaMovieDTO.getId(), cinemaMovieDTO.getCinemaId(), cinemaMapper.cinemaDtoToCinema(cinemaMovieDTO.getCinema()),
                 cinemaMovieDTO.getMovieId(), movieMapper.movieDtoToMovie(cinemaMovieDTO.getMovie()),
-                cinemaMovieDTO.getRegionId(),regionMapper.regionDtoToRegion(cinemaMovieDTO.getRegion()), cinemaMovieDTO.getScreeningSchedule());
+                cinemaMovieDTO.getRegionId(),regionMapper.regionDtoToRegion(cinemaMovieDTO.getRegion()), cinemaMovieDTO.getScreeningSchedule(), cinemaMovieDTO.getRoom());
     }
 
     @Override//nao estou usando
@@ -57,7 +57,7 @@ public class CinemaMovieMapper implements ICinemaMovieMapper {
             Cinema cinema = new Cinema(el.getCinema().getId(), el.getCinema().getNameCinema(),
                     el.getCinema().getDistrict(), el.getCinema().getRanking());
             CinemaMovie cinemaMovie = new CinemaMovie(el.getId(), null, cinema, el.getMovieId(),
-                    null, el.getRegionId(), null, el.getScreeningSchedule());
+                    null, el.getRegionId(), null, el.getScreeningSchedule(), el.getRoom());
             cinemaMovies.add(cinemaMovie);
         });
 

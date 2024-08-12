@@ -75,6 +75,10 @@ public class UserDTO {
         return Token;
     }
 
+    public void setConfirmEmail(Boolean confirmEmail) {
+        ConfirmEmail = confirmEmail;
+    }
+
     public void setToken(String token) throws DomainValidationException {
         DomainValidationException.when(token.isEmpty(), "Token was not generated successfully");
         Token = token;

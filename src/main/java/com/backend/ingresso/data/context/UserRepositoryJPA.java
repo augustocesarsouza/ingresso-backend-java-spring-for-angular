@@ -20,7 +20,7 @@ public interface UserRepositoryJPA extends JpaRepository<User, UUID> {
     User checkUserExits(String email, String cpf);
 
     @Query("SELECT new com.backend.ingresso.domain.entities." +
-            "User(u.Id, u.Name, u.Email, u.Cpf, u.PasswordHash, null) " +
+            "User(u.Id, u.Name, u.Email, u.Cpf, u.PasswordHash, u.ConfirmEmail) " +
             "FROM User AS u " +
             "WHERE u.Email = :email")
     User getUserByEmail(String email);
@@ -70,6 +70,11 @@ public interface UserRepositoryJPA extends JpaRepository<User, UUID> {
             "FROM User AS u " +
             "WHERE u.Email = :email")
     User getByEmailInfoForSendTokenChangePassword(String email);
+    @Query("SELECT new com.backend.ingresso.domain.entities." +
+            "User(u.Id, u.Name, u.Email, null, null, null) " +
+            "FROM User AS u " +
+            "WHERE u.Id = :userId")
+    User getByIdInfoToSentCodeToEmail(UUID userId);
     @Query("SELECT new com.backend.ingresso.domain.entities." +
             "User(null, null, null, null, u.PasswordHash, null) " +
             "FROM User AS u " +

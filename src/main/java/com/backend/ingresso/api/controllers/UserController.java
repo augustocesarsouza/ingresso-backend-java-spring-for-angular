@@ -1,6 +1,7 @@
 package com.backend.ingresso.api.controllers;
 
 import com.backend.ingresso.application.dto.TokenAlreadyVisualizedDTO;
+import com.backend.ingresso.application.dto.TokenSentToEmailDTO;
 import com.backend.ingresso.application.dto.UserDTO;
 import com.backend.ingresso.application.dto.UserPermissionDTO;
 import com.backend.ingresso.application.dto.validations.userValidationDTOs.UserPasswordChangeDTO;
@@ -121,6 +122,17 @@ public class UserController {
     @GetMapping("/public/user/send-token-email-change-password/{email}")
     public ResponseEntity<ResultService<String>> sendTokenEmailChangePassword(@PathVariable String email){
         var result = userManagementService.sendTokenEmailChangePassword(email);
+
+        if(result.IsSuccess){
+            return ResponseEntity.ok(result);
+        }
+
+        return ResponseEntity.badRequest().body(result);
+    }
+
+    @GetMapping("/public/user/resend-code-verify-email-checkout/{userId}")
+    public ResponseEntity<ResultService<TokenSentToEmailDTO>> resendCodeOfTheVerifyEmail(@PathVariable String userId){
+        var result = userManagementService.resendCodeOfTheVerifyEmail(userId);
 
         if(result.IsSuccess){
             return ResponseEntity.ok(result);

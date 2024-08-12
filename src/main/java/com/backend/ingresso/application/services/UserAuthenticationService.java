@@ -2,6 +2,7 @@ package com.backend.ingresso.application.services;
 
 import com.backend.ingresso.application.dto.TokenAlreadyVisualizedDTO;
 import com.backend.ingresso.application.dto.UserDTO;
+import com.backend.ingresso.application.mappings.MappingClass.UserMapper;
 import com.backend.ingresso.application.mappings.MappingClassInterface.IUserMapper;
 import com.backend.ingresso.application.mappings.MappingClassInterface.IUserPermissionMapper;
 import com.backend.ingresso.application.services.interfaces.IUserAuthenticationService;
@@ -98,6 +99,17 @@ public class UserAuthenticationService implements IUserAuthenticationService {
 
         User userAuth = (User) authenticate.getPrincipal();
 
+        if(!user.getConfirmEmail()){
+            InfoErrors<String> resultSend = sendEmailConfirmRegisterUser(user);
+
+            if(resultSend == null || !resultSend.IsSuccess){
+                //userCreateDTO.setEmailSendSuccessfully(false);
+                throw new RuntimeException("Failed to send email.");
+            }
+
+            return ResultService.Ok(userMapper.userToUserDto(user));
+        }
+
         InfoErrors<TokenOutValue> tokenOut = tokenGenerator.generatorByEmail(userAuth, userPermission, emailOrCpf);
 
         if(!tokenOut.IsSuccess)
@@ -117,8 +129,13 @@ public class UserAuthenticationService implements IUserAuthenticationService {
         //userDTO.setCode(randomCode); for test
         //userDTO.setEmailSendSuccessfully(resultSendCodeEmail.IsSuccess);
         userDTO.setEmailSendSuccessfully(true);
+        userDTO.setConfirmEmail(user.getConfirmEmail());
 
         return ResultService.Ok(userDTO);
+    }
+
+    private InfoErrors<String> sendEmailConfirmRegisterUser(User user){
+        return sendEmailUser.sendEmailConfirmRegisterUser(user);
     }
 
     @Override

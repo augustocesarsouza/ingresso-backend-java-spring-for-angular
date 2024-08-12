@@ -2,6 +2,7 @@ package com.backend.ingresso.application.services;
 
 import com.backend.ingresso.application.ErrorValidation;
 import com.backend.ingresso.application.dto.AdditionalInfoUserDTO;
+import com.backend.ingresso.application.dto.TokenSentToEmailDTO;
 import com.backend.ingresso.application.dto.UserDTO;
 import com.backend.ingresso.application.dto.validations.userValidationDTOs.UserPasswordChangeDTO;
 import com.backend.ingresso.application.dto.validateErrosDTOs.IValidateErrorsDTO;
@@ -224,6 +225,29 @@ public class UserManagementService implements IUserManagementService {
         }catch (Exception ex){
             return ResultService.Fail(ex.getMessage());
         }
+    }
+
+    @Override
+    @Transactional
+    public ResultService<TokenSentToEmailDTO> resendCodeOfTheVerifyEmail(String uuid_user_id){
+       try {
+           User userToEmail = userRepository.getByIdInfoToSentCodeToEmail(UUID.fromString(uuid_user_id));
+
+           int randomCode = generateRandomNumber();
+
+           if(dictionaryCode.getKeyDictionary(uuid_user_id) != null)
+               dictionaryCode.removeKeyDictionary(uuid_user_id);
+
+           dictionaryCode.putKeyValueDictionary(uuid_user_id, randomCode);
+           InfoErrors<String> resultSendCodeEmail = sendEmailUser.sendCodeRandom(userToEmail, randomCode);
+
+           if(!resultSendCodeEmail.IsSuccess)
+               return ResultService.Fail(new TokenSentToEmailDTO(false, resultSendCodeEmail.Message));
+
+           return ResultService.Ok(new TokenSentToEmailDTO(true, resultSendCodeEmail.Message));
+       }catch (Exception ex){
+           return ResultService.Fail(ex.getMessage());
+       }
     }
 
     private static int generateRandomNumber(){

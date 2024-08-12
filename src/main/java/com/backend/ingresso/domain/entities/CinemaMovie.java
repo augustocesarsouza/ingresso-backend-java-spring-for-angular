@@ -32,8 +32,10 @@ public class CinemaMovie {
     private Region region;
     @Column(name = "screening_schedule")
     private String ScreeningSchedule;
+    @Column(name = "room")
+    private Integer Room;
 
-    public CinemaMovie(UUID id, UUID cinemaId, Cinema cinema, UUID movieId, Movie movie, UUID regionId, Region region, String screeningSchedule) {
+    public CinemaMovie(UUID id, UUID cinemaId, Cinema cinema, UUID movieId, Movie movie, UUID regionId, Region region, String screeningSchedule, Integer room) {
         Id = id;
         CinemaId = cinemaId;
         this.cinema = cinema;
@@ -42,6 +44,7 @@ public class CinemaMovie {
         RegionId = regionId;
         this.region = region;
         ScreeningSchedule = screeningSchedule;
+        Room = room;
     }
 
     public CinemaMovie() {
@@ -77,5 +80,9 @@ public class CinemaMovie {
 
     public String getScreeningSchedule() {
         return ScreeningSchedule;
+    }
+
+    public Integer getRoom() {
+        return Room;
     }
 }
