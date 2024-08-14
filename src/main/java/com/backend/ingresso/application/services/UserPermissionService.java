@@ -26,11 +26,32 @@ public class UserPermissionService implements IUserPermissionService {
     @Override
     @Transactional
     public ResultService<List<UserPermissionDTO>> getAllPermissionUser(UUID idUser) {
-        List<UserPermissionDTO> userPermissions = userPermissionRepository.getAllPermissionUser(idUser);
-        if(userPermissions == null || userPermissions.isEmpty()){
-            return ResultService.Fail("not found");
-        }
+        try {
+            List<UserPermissionDTO> userPermissions = userPermissionRepository.getAllPermissionUser(idUser);
 
-        return ResultService.Ok(userPermissions);
+            if(userPermissions == null || userPermissions.isEmpty()){
+                return ResultService.Fail("not found");
+            }
+
+            return ResultService.Ok(userPermissions);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResultService<UserPermissionDTO> create(UserPermission userPermission) {
+        try {
+            UserPermission userPermissions = userPermissionRepository.create(userPermission);
+
+            if(userPermissions == null){
+                return ResultService.Fail("was not created");
+            }
+
+            return ResultService.Ok(userPermissionMapper.userPermissionToUserPermissionDto(userPermissions));
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
     }
 }

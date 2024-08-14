@@ -22,6 +22,7 @@ public class UserMapper implements IUserMapper {
 
         return new User(userDTO.getId(),userDTO.getName(), userDTO.getEmail(), userDTO.getCpf(), null, userDTO.getConfirmEmail());
     }
+
     @Override
     public UserCreateValidatorDTO userToUserCreateValidatorDto(User user) {
         if(user == null)

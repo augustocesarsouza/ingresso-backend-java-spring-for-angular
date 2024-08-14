@@ -1,10 +1,7 @@
 package com.backend.ingresso.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
@@ -21,11 +18,16 @@ public class Permission {
     @Column(name = "permission_name")
     @JsonProperty("permissionName")
     private String PermissionName;
+    @OneToOne(mappedBy = "Permission", cascade = CascadeType.REMOVE)
+    private UserPermission userPermission;
 
     public Permission(UUID id, String visualName, String permissionName) {
         Id = id;
         VisualName = visualName;
         PermissionName = permissionName;
+    }
+
+    public Permission() {
     }
 
     public UUID getId() {

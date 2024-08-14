@@ -27,7 +27,6 @@ public class UserPermissionRepository implements IUserPermissionRepository {
 
     @Override
     public UserPermission create(UserPermission userPermission) {
-
         if(userPermission == null)
             return null;
 

@@ -12,33 +12,23 @@ public class UserPermission {
     @Column(name = "user_permission_id")
     @JsonProperty("id")
     private UUID Id;
-    @Column(name = "user_id", insertable = false, updatable = false)
-    @JsonProperty("userId")
-    private UUID UserId;
     @OneToOne
     @JoinColumn(name = "user_id")
     @JsonProperty("user")
     private User User;
-    @Column(name = "permission_id", insertable = false, updatable = false)
-    @JsonProperty("permissionId")
-    private UUID PermissionId;
     @OneToOne
     @JoinColumn(name = "permission_id")
     @JsonProperty("permission")
     private Permission Permission;
 
-    public UserPermission(UUID id, UUID userId, UUID permissionId, Permission permission) {
+    public UserPermission(UUID id, Permission permission) {
         Id = id;
-        UserId = userId;
-        PermissionId = permissionId;
         Permission = permission;
     }
 
-    public UserPermission(UUID id, UUID userId, User user, UUID permissionId, Permission permission) {
+    public UserPermission(UUID id, User user, Permission permission) {
         Id = id;
-        UserId = userId;
         User = user;
-        PermissionId = permissionId;
         Permission = permission;
     }
 
@@ -49,24 +39,12 @@ public class UserPermission {
         return Id;
     }
 
-    public UUID getUserId() {
-        return UserId;
-    }
-
-    public UUID getPermissionId() {
-        return PermissionId;
-    }
-
     public void setId(UUID id) {
         Id = id;
     }
 
-    public void setUserId(UUID userId) {
-        UserId = userId;
-    }
-
-    public void setPermissionId(UUID permissionId) {
-        PermissionId = permissionId;
+    public User getUser() {
+        return User;
     }
 
     public Permission getPermission() {

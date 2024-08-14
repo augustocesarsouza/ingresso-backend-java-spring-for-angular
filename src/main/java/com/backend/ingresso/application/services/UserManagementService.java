@@ -2,6 +2,7 @@ package com.backend.ingresso.application.services;
 
 import com.backend.ingresso.application.ErrorValidation;
 import com.backend.ingresso.application.dto.AdditionalInfoUserDTO;
+import com.backend.ingresso.application.dto.PermissionDTO;
 import com.backend.ingresso.application.dto.TokenSentToEmailDTO;
 import com.backend.ingresso.application.dto.UserDTO;
 import com.backend.ingresso.application.dto.validations.userValidationDTOs.UserPasswordChangeDTO;
@@ -11,7 +12,9 @@ import com.backend.ingresso.application.dto.validations.userValidationDTOs.UserU
 import com.backend.ingresso.application.mappings.MappingClassInterface.IAdditionalInfoUserMapper;
 import com.backend.ingresso.application.mappings.MappingClassInterface.IUserMapper;
 import com.backend.ingresso.application.services.interfaces.IAdditionalInfoUserService;
+import com.backend.ingresso.application.services.interfaces.IPermissionService;
 import com.backend.ingresso.application.services.interfaces.IUserManagementService;
+import com.backend.ingresso.application.services.interfaces.IUserPermissionService;
 import com.backend.ingresso.application.util.ValidateUUID;
 import com.backend.ingresso.application.util.interfaces.IBCryptPasswordEncoderUtil;
 import com.backend.ingresso.application.util.interfaces.IDictionaryCode;
@@ -52,10 +55,15 @@ public class UserManagementService implements IUserManagementService {
     private final AuthenticationManager authenticationManager;
     private final IDictionaryCode dictionaryCode;
     private final IUserPermissionRepository userPermissionRepository;
+    private final IPermissionService permissionService;
+    private final IUserPermissionService userPermissionService;
+    private IPermissionService permissionService1;
+
     @Autowired
     public UserManagementService(IUserRepository userRepository, IValidateErrorsDTO validateErrorsDTO, IUserMapper userMapper, IAdditionalInfoUserService additionalInfoUserService,
                                  IBCryptPasswordEncoderUtil bCryptPasswordEncoder, IAdditionalInfoUserMapper additionalInfoUserMapper,
-                                 ISendEmailUser sendEmailUser, AuthenticationManager authenticationManager, IDictionaryCode dictionaryCode, IUserPermissionRepository userPermissionRepository) {
+                                 ISendEmailUser sendEmailUser, AuthenticationManager authenticationManager, IDictionaryCode dictionaryCode, IUserPermissionRepository userPermissionRepository,
+                                 IPermissionService permissionService, IUserPermissionService userPermissionService) {
         this.userRepository = userRepository;
         this.validateErrorsDTO = validateErrorsDTO;
         this.userMapper = userMapper;
@@ -66,6 +74,8 @@ public class UserManagementService implements IUserManagementService {
         this.authenticationManager = authenticationManager;
         this.dictionaryCode = dictionaryCode;
         this.userPermissionRepository = userPermissionRepository;
+        this.permissionService = permissionService;
+        this.userPermissionService = userPermissionService;
     }
 
     @Override
@@ -88,6 +98,13 @@ public class UserManagementService implements IUserManagementService {
             String passwordEncoder = bCryptPasswordEncoder.encodePassword(userCreateValidatorDTO.getPassword());
 
             UUID uuid_user_id = UUID.randomUUID();
+            UUID userPermissionId = UUID.randomUUID();
+            var permission = permissionService.getIdByVisualName("guest");
+
+            if(!permission.IsSuccess)
+                return ResultService.Fail(permission.Message);
+
+            PermissionDTO permissionDTO = permission.Data;
 
             var userToEmail = new User();
             userToEmail.setId(uuid_user_id);
@@ -139,9 +156,25 @@ public class UserManagementService implements IUserManagementService {
             if(userCreate == null)
                 return ResultService.Fail("error when create user");
 
+            User user = userRepository.findById(uuid_user_id);
+
+            if(user == null)
+                return ResultService.Fail("User not been found");
+
+            var resultFind = permissionService.findById(permissionDTO.getId());
+
+            if(!resultFind.IsSuccess)
+                return ResultService.Fail("Permission not been found");
+
+            UserPermission userPermission = new UserPermission(userPermissionId, user, resultFind.Data);
+
+            var createUserPermission = userPermissionService.create(userPermission);
+
+            if(!createUserPermission.IsSuccess)
+                return ResultService.Fail(createUserPermission.Message);
+
             BindingResult resultValid = new BeanPropertyBindingResult(additionalInfoUserDTO, "additionalInfoUserDTO");
             CreateInfoUser(additionalInfoUserDTO, resultValid);
-
 
             return ResultService.Ok(userCreateDTO);
         }catch (Exception ex){
@@ -412,7 +445,7 @@ public class UserManagementService implements IUserManagementService {
     }
 
     private InfoErrors<String> sendMessageEmail(User user){
-        return sendEmailUser.sendEmail(user);
+        return sendEmailUser.sendEmailConfirmRegisterUser(user);
     }
 
     @Override

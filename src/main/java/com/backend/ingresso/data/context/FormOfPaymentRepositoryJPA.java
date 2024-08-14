@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface FormOfPaymentRepositoryJPA extends JpaRepository<FormOfPayment, UUID> {
     //FormOfPayment(UUID id, String formName, String price, String movieId, Movie movie)
     @Query("SELECT new com.backend.ingresso.application.dto." +
-            "FormOfPaymentDTO(null, fp.FormName, fp.Price, null, null) " +
+            "FormOfPaymentDTO(fp.Id, fp.FormName, fp.Price, null, null) " +
             "FROM FormOfPayment AS fp WHERE fp.MovieId = :movieId")
     List<FormOfPaymentDTO> getMovieIDInfo(UUID movieId);
 }

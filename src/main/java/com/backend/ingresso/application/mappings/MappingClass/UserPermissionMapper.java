@@ -2,8 +2,11 @@ package com.backend.ingresso.application.mappings.MappingClass;
 
 import com.backend.ingresso.application.dto.PermissionDTO;
 import com.backend.ingresso.application.dto.UserPermissionDTO;
+import com.backend.ingresso.application.mappings.MappingClassInterface.IPermissionMapper;
+import com.backend.ingresso.application.mappings.MappingClassInterface.IUserMapper;
 import com.backend.ingresso.application.mappings.MappingClassInterface.IUserPermissionMapper;
 import com.backend.ingresso.domain.entities.Permission;
+import com.backend.ingresso.domain.entities.User;
 import com.backend.ingresso.domain.entities.UserPermission;
 import org.springframework.stereotype.Component;
 
@@ -13,14 +16,27 @@ import java.util.UUID;
 
 @Component
 public class UserPermissionMapper implements IUserPermissionMapper {
+    private final IUserMapper userMapper;
+    private final IPermissionMapper permissionMapper;
+
+    public UserPermissionMapper(IUserMapper userMapper, IPermissionMapper permissionMapper) {
+        this.userMapper = userMapper;
+        this.permissionMapper = permissionMapper;
+    }
+
     @Override
     public UserPermissionDTO userPermissionToUserPermissionDto(UserPermission userPermission) {
-        return null;
+        if(userPermission == null)
+            return null;
+
+        return new UserPermissionDTO(userPermission.getId(), userMapper.userToUserDto(userPermission.getUser()),
+                permissionMapper.permissionToPermissionDto(userPermission.getPermission()));
     }
 
     @Override
     public UserPermission userPermissionDTOToUserPermission(UserPermissionDTO userPermissionDTO) {
-        return null;
+        return new UserPermission(userPermissionDTO.getId(), userMapper.userDtoToUser(userPermissionDTO.getUserDTO()),
+                permissionMapper.permissionDtoToPermission(userPermissionDTO.getPermissionDTO()));
     }
 
     public List<UserPermission> UserPermissionDtoToUserPermission(List<UserPermissionDTO> userPermissionDTO) {
@@ -33,9 +49,11 @@ public class UserPermissionMapper implements IUserPermissionMapper {
             Permission permission = new Permission(null, el.getPermissionDTO().getVisualName(), el.getPermissionDTO().getPermissionName());
             UserPermission userPermissionNew;
             if(el.getPermissionDTO() != null){
-                userPermissionNew = new UserPermission(el.getId(), el.getUserId(), el.getPermissionId(), permission);
+                userPermissionNew = new UserPermission(el.getId(), userMapper.userDtoToUser(el.getUserDTO()),
+                        permissionMapper.permissionDtoToPermission(el.getPermissionDTO()));
             }else {
-                userPermissionNew = new UserPermission(el.getId(), el.getUserId(), el.getPermissionId(), null);
+                userPermissionNew = new UserPermission(el.getId(), userMapper.userDtoToUser(el.getUserDTO()),
+                        permissionMapper.permissionDtoToPermission(el.getPermissionDTO()));
             }
             listUserPermission.add(userPermissionNew);
         });
@@ -54,9 +72,11 @@ public class UserPermissionMapper implements IUserPermissionMapper {
             PermissionDTO permissionDTO = new PermissionDTO(null, el.getPermission().getVisualName(), el.getPermission().getPermissionName());
             UserPermissionDTO userPermissionNew;
             if(el.getPermission() != null){
-                userPermissionNew = new UserPermissionDTO(el.getId(), el.getUserId(), null, el.getPermissionId(), permissionDTO);
+                userPermissionNew = new UserPermissionDTO(el.getId(), userMapper.userToUserDto(el.getUser()),
+                        permissionMapper.permissionToPermissionDto(el.getPermission()));
             }else {
-                userPermissionNew = new UserPermissionDTO(el.getId(), el.getUserId(), null, el.getPermissionId(), null);
+                userPermissionNew = new UserPermissionDTO(el.getId(), userMapper.userToUserDto(el.getUser()),
+                        permissionMapper.permissionToPermissionDto(el.getPermission()));
             }
             listUserPermissionDto.add(userPermissionNew);
         });

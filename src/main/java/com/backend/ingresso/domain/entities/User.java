@@ -33,6 +33,8 @@ public class User implements UserDetails {
     @Column(name = "confirm_email")
     @JsonProperty("confirmEmail")
     private Boolean ConfirmEmail; // se 0 false, 1 true
+    @OneToOne(mappedBy = "User", cascade = CascadeType.REMOVE)
+    private UserPermission userPermission;
 
     public User(UUID id, String name, String email, String cpf, String passwordHash, Boolean confirmEmail) {
         Id = id;

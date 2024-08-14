@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public interface IUserRepository {
     public User checkUserExits(String email, String cpf);
+    User findById(UUID userId);
     public User getUserByEmail(String email);
     public User checkIfAlreadyExistCpf(String cpf);
     public User checkEmailAlreadyExists(String email);

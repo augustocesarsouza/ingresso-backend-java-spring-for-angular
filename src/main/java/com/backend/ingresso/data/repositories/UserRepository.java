@@ -18,6 +18,11 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
+    public User findById(UUID userId) {
+        return userRepositoryJPA.findById(userId).orElse(null);
+    }
+
+    @Override
     public User checkUserExits(String email, String cpf) {
         return userRepositoryJPA.checkUserExits(email, cpf);
     }

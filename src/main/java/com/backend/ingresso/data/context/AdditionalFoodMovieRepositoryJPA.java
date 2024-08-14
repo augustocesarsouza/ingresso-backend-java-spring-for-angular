@@ -14,7 +14,7 @@ public interface AdditionalFoodMovieRepositoryJPA extends JpaRepository<Addition
     //AdditionalFoodMovie(UUID id, String title, String price, String fee, String imgUrl, String publicId, UUID movieId, Movie movie)
     //AdditionalFoodMovieDTO(UUID id, String title, String price, String fee, String imgUrl, String publicId, UUID movieId, MovieDTO movieDTO)
     @Query("SELECT new com.backend.ingresso.application.dto." +
-            "AdditionalFoodMovieDTO(null, af.Title, af.Price, af.Fee, af.ImgUrl, null, null, null) " +
+            "AdditionalFoodMovieDTO(af.Id, af.Title, af.Price, af.Fee, af.ImgUrl, null, null, null) " +
             "FROM AdditionalFoodMovie AS af WHERE af.MovieId = :movieId")
     List<AdditionalFoodMovieDTO> getAllFoodMovie(UUID movieId);
 }

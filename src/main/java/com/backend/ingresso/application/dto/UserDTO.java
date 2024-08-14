@@ -44,6 +44,10 @@ public class UserDTO {
         PasswordHash = passwordHash;
     }
 
+    public UserDTO(UUID id) {
+        Id = id;
+    }
+
     public UserDTO() {
     }
 
