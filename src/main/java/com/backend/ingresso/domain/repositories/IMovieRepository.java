@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface IMovieRepository {
     public Movie getById(UUID movieId);
+    Movie findById(UUID movieId);
     public Movie getInfoForChooseMovie(UUID movieId);
     public List<MovieDTO> getAllStatusTrending();
     public Movie getStatusHighlight();

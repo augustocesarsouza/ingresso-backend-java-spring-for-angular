@@ -12,6 +12,7 @@ import com.backend.ingresso.application.util.ValidateUUID;
 import com.backend.ingresso.data.cloudinaryUtil.CloudinaryCreate;
 import com.backend.ingresso.data.utilityExternal.Interface.ICloudinaryUti;
 import com.backend.ingresso.domain.entities.AdditionalFoodMovie;
+import com.backend.ingresso.domain.entities.FormOfPayment;
 import com.backend.ingresso.domain.repositories.IAdditionalFoodMovieRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,22 @@ public class AdditionalFoodMovieService implements IAdditionalFoodMovieService {
         this.movieService = movieService;
         this.cloudinaryUti = cloudinaryUti;
         this.additionalFoodMovieMapper = additionalFoodMovieMapper;
+    }
+
+    @Override
+    @Transactional
+    public ResultService<AdditionalFoodMovie> findById(UUID additionalFoodMovieId) {
+        try {
+            AdditionalFoodMovie additionalFoodMovie = additionalFoodMovieRepository.findById(additionalFoodMovieId);
+
+            if(additionalFoodMovie == null){
+                return ResultService.Fail("not found");
+            }
+
+            return ResultService.Ok(additionalFoodMovie);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
     }
 
     @Override

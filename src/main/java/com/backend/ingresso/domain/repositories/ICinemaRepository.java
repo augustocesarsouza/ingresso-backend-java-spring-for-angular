@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public interface ICinemaRepository {
     Cinema getById(UUID cinemaId);
+    Cinema findById(UUID cinemaId);
     Cinema create(Cinema cinema);
     Cinema delete(UUID cinemaId);
 }

@@ -3,6 +3,7 @@ package com.backend.ingresso.application.services;
 import com.backend.ingresso.application.dto.UserPermissionDTO;
 import com.backend.ingresso.application.mappings.MappingClassInterface.IUserPermissionMapper;
 import com.backend.ingresso.application.services.interfaces.IUserPermissionService;
+import com.backend.ingresso.domain.entities.User;
 import com.backend.ingresso.domain.entities.UserPermission;
 import com.backend.ingresso.domain.repositories.IUserPermissionRepository;
 import jakarta.transaction.Transactional;

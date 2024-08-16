@@ -23,7 +23,10 @@ public class AdditionalFoodMovieRepository implements IAdditionalFoodMovieReposi
     public List<AdditionalFoodMovieDTO> getAllFoodMovie(UUID movieId) {
         return additionalFoodMovieRepositoryJPA.getAllFoodMovie(movieId);
     }
-
+    @Override
+    public AdditionalFoodMovie findById(UUID additionalFoodMovieId) {
+        return additionalFoodMovieRepositoryJPA.findById(additionalFoodMovieId).orElse(null);
+    }
     @Override
     public AdditionalFoodMovie create(AdditionalFoodMovie additionalFoodMovie) {
         if(additionalFoodMovie == null)

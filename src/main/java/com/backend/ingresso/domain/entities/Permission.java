@@ -18,8 +18,8 @@ public class Permission {
     @Column(name = "permission_name")
     @JsonProperty("permissionName")
     private String PermissionName;
-    @OneToOne(mappedBy = "Permission", cascade = CascadeType.REMOVE)
-    private UserPermission userPermission;
+//    @OneToOne(mappedBy = "Permission", cascade = CascadeType.REMOVE)
+//    private UserPermission userPermission;
 
     public Permission(UUID id, String visualName, String permissionName) {
         Id = id;

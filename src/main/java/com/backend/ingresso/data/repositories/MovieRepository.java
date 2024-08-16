@@ -23,7 +23,10 @@ public class MovieRepository implements IMovieRepository {
     public Movie getById(UUID movieId) {
         return movieRepositoryJPA.getMovieById_Info_Id_Title(movieId).stream().findFirst().orElse(null);
     }
-
+    @Override
+    public Movie findById(UUID movieId) {
+        return movieRepositoryJPA.findById(movieId).orElse(null);
+    }
     @Override
     public Movie getInfoForChooseMovie(UUID movieId) {
         return movieRepositoryJPA.getInfoForChooseMovie(movieId);

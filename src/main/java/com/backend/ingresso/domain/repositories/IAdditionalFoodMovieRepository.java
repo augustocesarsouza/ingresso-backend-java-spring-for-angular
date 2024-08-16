@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface IAdditionalFoodMovieRepository {
     List<AdditionalFoodMovieDTO> getAllFoodMovie(UUID movieId);
+    AdditionalFoodMovie findById(UUID additionalFoodMovieId);
     AdditionalFoodMovie create(AdditionalFoodMovie additionalFoodMovie);
 }

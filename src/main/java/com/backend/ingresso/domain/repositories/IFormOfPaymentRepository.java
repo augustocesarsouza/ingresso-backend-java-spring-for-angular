@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface IFormOfPaymentRepository {
     List<FormOfPaymentDTO> getMovieIDInfo(UUID movieId);
+    FormOfPayment findById(UUID movieId);
     FormOfPayment create(FormOfPayment formOfPayment);
 }

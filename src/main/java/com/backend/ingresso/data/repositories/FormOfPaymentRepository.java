@@ -23,7 +23,10 @@ public class FormOfPaymentRepository implements IFormOfPaymentRepository {
     public List<FormOfPaymentDTO> getMovieIDInfo(UUID movieId) {
         return formOfPaymentRepositoryJPA.getMovieIDInfo(movieId);
     }
-
+    @Override
+    public FormOfPayment findById(UUID movieId) {
+        return formOfPaymentRepositoryJPA.findById(movieId).orElse(null);
+    }
     @Override
     public FormOfPayment create(FormOfPayment formOfPayment) {
         if(formOfPayment == null)

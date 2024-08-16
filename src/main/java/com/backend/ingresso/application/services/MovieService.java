@@ -11,6 +11,7 @@ import com.backend.ingresso.application.services.interfaces.IRegionService;
 import com.backend.ingresso.application.util.ValidateUUID;
 import com.backend.ingresso.data.utilityExternal.Interface.ICloudinaryUti;
 import com.backend.ingresso.domain.entities.Movie;
+import com.backend.ingresso.domain.entities.User;
 import com.backend.ingresso.domain.repositories.IMovieRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,22 @@ public class MovieService implements IMovieService {
         this.validateErrorsDTO = validateErrorsDTO;
         this.cloudinaryUti = cloudinaryUti;
         this.movieMapper = movieMapper;
+    }
+
+    @Override
+    @Transactional
+    public ResultService<Movie> findById(UUID movieId) {
+        try {
+            Movie movie = movieRepository.findById(movieId);
+
+            if(movie == null){
+                return ResultService.Fail("not found");
+            }
+
+            return ResultService.Ok(movie);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
     }
 
     @Override

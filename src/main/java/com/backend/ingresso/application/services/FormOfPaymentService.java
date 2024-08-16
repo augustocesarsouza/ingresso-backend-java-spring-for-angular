@@ -10,7 +10,9 @@ import com.backend.ingresso.application.services.interfaces.IFormOfPaymentServic
 import com.backend.ingresso.application.services.interfaces.IMovieService;
 import com.backend.ingresso.application.util.ValidateUUID;
 import com.backend.ingresso.domain.entities.FormOfPayment;
+import com.backend.ingresso.domain.entities.Movie;
 import com.backend.ingresso.domain.repositories.IFormOfPaymentRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -32,6 +34,22 @@ public class FormOfPaymentService implements IFormOfPaymentService {
         this.formOfPaymentMapper = formOfPaymentMapper;
         this.movieService = movieService;
         this.validateErrorsDTO = validateErrorsDTO;
+    }
+
+    @Override
+    @Transactional
+    public ResultService<FormOfPayment> findById(UUID formOfPaymentId) {
+        try {
+            FormOfPayment formOfPayment = formOfPaymentRepository.findById(formOfPaymentId);
+
+            if(formOfPayment == null){
+                return ResultService.Fail("not found");
+            }
+
+            return ResultService.Ok(formOfPayment);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
     }
 
     @Override

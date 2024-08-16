@@ -31,6 +31,22 @@ public class CinemaService implements ICinemaService {
     }
 
     @Override
+    @Transactional
+    public ResultService<Cinema> findById(UUID cinemaId) {
+        try {
+            Cinema cinema = cinemaRepository.findById(cinemaId);
+
+            if(cinema == null){
+                return ResultService.Fail("not found");
+            }
+
+            return ResultService.Ok(cinema);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
+    }
+
+    @Override
     public ResultService<CinemaDTO> getCheckIfCinemaExistsById(UUID cinemaId) {
         if(cinemaId == null)
             return ResultService.Fail("error cinemaId null");

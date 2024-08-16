@@ -33,8 +33,13 @@ public class User implements UserDetails {
     @Column(name = "confirm_email")
     @JsonProperty("confirmEmail")
     private Boolean ConfirmEmail; // se 0 false, 1 true
-    @OneToOne(mappedBy = "User", cascade = CascadeType.REMOVE)
-    private UserPermission userPermission;
+    @OneToMany(cascade = CascadeType.REMOVE)
+    private List<FinalPaymentCheckoutMovie> finalPaymentCheckoutMovies;
+    // TESTAR ESSE 'OneToMany' para ver se é certo Talvez eu nem precise dele aqui talvez eu tire daqui
+    // E USO NO 'tb_payment_checkout_movie_ticket_product' que é onde eu vou pegar AS ENTIDADES
+
+//    @OneToOne(mappedBy = "User", cascade = CascadeType.REMOVE)
+//    private UserPermission userPermission;
 
     public User(UUID id, String name, String email, String cpf, String passwordHash, Boolean confirmEmail) {
         Id = id;

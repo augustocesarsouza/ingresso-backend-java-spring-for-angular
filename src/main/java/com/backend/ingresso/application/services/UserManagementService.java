@@ -80,6 +80,22 @@ public class UserManagementService implements IUserManagementService {
 
     @Override
     @Transactional
+    public ResultService<User> findById(UUID idUser) {
+        try {
+            User user = userRepository.findById(idUser);
+
+            if(user == null){
+                return ResultService.Fail("not found");
+            }
+
+            return ResultService.Ok(user);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
     public ResultService<UserCreateValidatorDTO> create(UserCreateValidatorDTO userCreateValidatorDTO, BindingResult result) {
         // ideia futura colocar aqui quando criar um usuario salvar na tabela 'tb_user_permissions' uma permissao padrão já para os usuarios
         if(result.hasErrors()){
