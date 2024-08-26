@@ -16,6 +16,11 @@ public class FinalPaymentCheckoutMovieProductRepository implements IFinalPayment
     }
 
     @Override
+    public FinalPaymentCheckoutMovieProduct getFinalPaymentMovieProductNULL() {
+        return finalPaymentCheckoutMovieProductRepositoryJPA.findById(UUID.fromString("bf0923d8-cc68-4520-84ff-18ceb48aa1d9")).orElse(null);
+    }
+
+    @Override
     public FinalPaymentCheckoutMovieProduct create(FinalPaymentCheckoutMovieProduct finalPaymentCheckoutMovieProduct) {
         if(finalPaymentCheckoutMovieProduct == null)
             return null;

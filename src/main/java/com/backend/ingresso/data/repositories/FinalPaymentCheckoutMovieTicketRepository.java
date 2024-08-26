@@ -1,6 +1,7 @@
 package com.backend.ingresso.data.repositories;
 
 import com.backend.ingresso.data.context.FinalPaymentCheckoutMovieTicketRepositoryJPA;
+import com.backend.ingresso.domain.entities.FinalPaymentCheckoutMovieProduct;
 import com.backend.ingresso.domain.entities.FinalPaymentCheckoutMovieTicket;
 import com.backend.ingresso.domain.repositories.IFinalPaymentCheckoutMovieTicketRepository;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,11 @@ public class FinalPaymentCheckoutMovieTicketRepository implements IFinalPaymentC
 
     public FinalPaymentCheckoutMovieTicketRepository(FinalPaymentCheckoutMovieTicketRepositoryJPA finalPaymentCheckoutMovieTicketRepositoryJPA) {
         this.finalPaymentCheckoutMovieTicketRepositoryJPA = finalPaymentCheckoutMovieTicketRepositoryJPA;
+    }
+
+    @Override
+    public FinalPaymentCheckoutMovieTicket getFinalPaymentMovieTicketNULL() {
+        return finalPaymentCheckoutMovieTicketRepositoryJPA.findById(UUID.fromString("f9d1fdc6-47ba-48a5-899b-32cce43448e0")).orElse(null);
     }
 
     @Override

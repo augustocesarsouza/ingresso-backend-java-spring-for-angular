@@ -1,22 +1,28 @@
 package com.backend.ingresso.application.dto;
 
+import com.backend.ingresso.domain.entities.Cinema;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 import java.util.UUID;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FinalPaymentCheckoutMovieDTO {
-    @JsonProperty("id")
+    @JsonIgnore
+    private UUID id;
+    @JsonProperty("finalPaymentCheckoutMovieId")
     private UUID Id;
-    @JsonProperty("user")
+    @JsonProperty("userDTO")
     private UserDTO UserDTO;
     @JsonProperty("userId")
     private String UserId;
-    @JsonProperty("movie")
+    @JsonProperty("movieDTO")
     private MovieDTO MovieDTO;
     @JsonProperty("movieId")
     private String MovieId;
-    @JsonProperty("cinema")
+    @JsonProperty("cinemaDTO")
     private CinemaDTO CinemaDTO;
     @JsonProperty("cinemaId")
     private String CinemaId;
@@ -36,6 +42,29 @@ public class FinalPaymentCheckoutMovieDTO {
         Seats = seats;
         ObjTicketDTO = objTicketDTO;
         ObjProductDTO = objProductDTO;
+    }
+
+    public FinalPaymentCheckoutMovieDTO(UUID id, UserDTO userDTO, String userId, MovieDTO movieDTO, String movieId, CinemaDTO cinemaDTO, String cinemaId, String seats) {
+        Id = id;
+        UserDTO = userDTO;
+        UserId = userId;
+        MovieDTO = movieDTO;
+        MovieId = movieId;
+        CinemaDTO = cinemaDTO;
+        CinemaId = cinemaId;
+        Seats = seats;
+    }
+
+    public FinalPaymentCheckoutMovieDTO(UUID id, UserDTO userDTO, MovieDTO movieDTO, CinemaDTO cinemaDTO, String seats) {
+        Id = id;
+        UserDTO = userDTO;
+        MovieDTO = movieDTO;
+        CinemaDTO = cinemaDTO;
+        Seats = seats;
+    }
+
+    public FinalPaymentCheckoutMovieDTO(UUID id) {
+        Id = id;
     }
 
     public FinalPaymentCheckoutMovieDTO() {

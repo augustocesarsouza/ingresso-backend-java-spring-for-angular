@@ -25,7 +25,7 @@ public class CinemaController {
         this.cinemaService = cinemaService;
     }
 
-    @PostMapping("/cinema/create")
+    @PostMapping("/public/cinema/create")
     public ResponseEntity<ResultService<CinemaDTO>> create(@Valid @RequestBody CinemaCreateDTO cinemaCreateDTO, BindingResult resultValid){
         var result = cinemaService.create(cinemaCreateDTO, resultValid);
 

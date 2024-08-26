@@ -13,14 +13,11 @@ public class CinemaDTO {
     private String nameCinema;
     @JsonProperty("district")
     private String district;
-    @JsonProperty("ranking")
-    private String ranking;
 
-    public CinemaDTO(UUID id, String nameCinema, String district, String ranking) {
+    public CinemaDTO(UUID id, String nameCinema, String district) {
         this.id = id;
         this.nameCinema = nameCinema;
         this.district = district;
-        this.ranking = ranking;
     }
 
     public CinemaDTO() {
@@ -36,9 +33,5 @@ public class CinemaDTO {
 
     public String getDistrict() {
         return district;
-    }
-
-    public String getRanking() {
-        return ranking;
     }
 }

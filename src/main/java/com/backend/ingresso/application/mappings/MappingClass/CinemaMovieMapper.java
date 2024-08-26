@@ -55,7 +55,7 @@ public class CinemaMovieMapper implements ICinemaMovieMapper {
 
         cinemaMovieList.forEach((el) -> {
             Cinema cinema = new Cinema(el.getCinema().getId(), el.getCinema().getNameCinema(),
-                    el.getCinema().getDistrict(), el.getCinema().getRanking());
+                    el.getCinema().getDistrict());
             CinemaMovie cinemaMovie = new CinemaMovie(el.getId(), null, cinema, el.getMovieId(),
                     null, el.getRegionId(), null, el.getScreeningSchedule(), el.getRoom());
             cinemaMovies.add(cinemaMovie);

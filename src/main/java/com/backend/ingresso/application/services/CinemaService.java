@@ -78,8 +78,8 @@ public class CinemaService implements ICinemaService {
         }
 
         try {
-            UUID movieId = UUID.randomUUID();
-            cinemaCreateDTO.setId(movieId);
+            UUID cinemaId = UUID.randomUUID();
+            cinemaCreateDTO.setId(cinemaId);
 
             Cinema cinemaCreate = cinemaRepository.create(cinemaMapper.cinemaCreateDTOToCinema(cinemaCreateDTO));
 

@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface CinemaRepositoryJPA extends JpaRepository<Cinema, UUID> {
     //Cinema(UUID id, String nameCinema, String district, String ranking)
     @Query("SELECT new com.backend.ingresso.domain.entities." +
-            "Cinema(c.Id, null, null, null) " +
+            "Cinema(c.Id, null, null) " +
             "FROM Cinema AS c WHERE c.Id = :cinemaId")
     List<Cinema> getCinemaById_Info_Id(UUID cinemaId);
 }

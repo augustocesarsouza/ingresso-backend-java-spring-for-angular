@@ -39,7 +39,7 @@ public class CinemaMovieController {
         return ResponseEntity.badRequest().body(result);
     }
 
-    @PostMapping("/cinemaMovie/create")
+    @PostMapping("/public/cinemaMovie/create")
     public ResponseEntity<ResultService<CinemaMovieDTO>> create(@Valid @RequestBody CinemaMovieCreate cinemaMovieDTO, BindingResult resultValid){
         var result = cinemaMovieService.create(cinemaMovieDTO, resultValid);
 

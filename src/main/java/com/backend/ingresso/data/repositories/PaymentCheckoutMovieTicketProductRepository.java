@@ -1,5 +1,6 @@
 package com.backend.ingresso.data.repositories;
 
+import com.backend.ingresso.application.dto.PaymentCheckoutMovieTicketProductDTO;
 import com.backend.ingresso.application.services.ResultService;
 import com.backend.ingresso.data.context.PaymentCheckoutMovieTicketProductJPA;
 import com.backend.ingresso.domain.entities.FinalPaymentCheckoutMovie;
@@ -19,10 +20,10 @@ public class PaymentCheckoutMovieTicketProductRepository implements IPaymentChec
     }
 
     @Override
-    public ResultService<List<PaymentCheckoutMovieTicketProduct>> getInfoAboutBayFinalOfTheUser(UUID paymentCheckoutMovieTicketId){
+    public List<PaymentCheckoutMovieTicketProductDTO> getInfoAboutBayFinalOfTheUser(UUID paymentCheckoutMovieTicketId){
         var resultGet = paymentCheckoutMovieTicketProductJPA.getInfoAboutBayFinalOfTheUser(paymentCheckoutMovieTicketId);
 
-        return ResultService.Ok(resultGet);
+        return resultGet;
     }
 
     @Override

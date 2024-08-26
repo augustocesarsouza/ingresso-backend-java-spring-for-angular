@@ -17,7 +17,7 @@ public class PaymentCheckoutMovieTicketProduct {
     @JoinColumn(name = "payment_checkout_movie_id")
     @JsonProperty("finalPaymentCheckoutMovie")
     private FinalPaymentCheckoutMovie FinalPaymentCheckoutMovie;
-    @OneToOne//TESTAR ISSO AQUI AMANHA PODE SER QUE TENHA QUE SER 'ManyToOne'
+    @OneToOne
     @JoinColumn(name = "payment_checkout_movie_ticket_id")
     @JsonProperty("finalPaymentCheckoutMovieTicket")
     private FinalPaymentCheckoutMovieTicket FinalPaymentCheckoutMovieTicket;

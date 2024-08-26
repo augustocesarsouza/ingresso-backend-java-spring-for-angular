@@ -6,14 +6,16 @@ import com.backend.ingresso.domain.entities.*;
 import com.backend.ingresso.domain.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class FinalPaymentCheckoutMovieService implements IFinalPaymentCheckoutMovieService {
     private final IFinalPaymentCheckoutMovieRepository finalPaymentCheckoutMovieRepository;
-    private final IPaymentCheckoutMovieTicketProductRepository paymentCheckoutMovieTicketProductRepository;
+    private final IPaymentCheckoutMovieTicketProductService paymentCheckoutMovieTicketProductService;
     private final IFinalPaymentCheckoutMovieTicketService finalPaymentCheckoutMovieTicketService;
     private final IFinalPaymentCheckoutMovieProductService finalPaymentCheckoutMovieProductService;
     private final IUserManagementService userManagementService;
@@ -21,17 +23,20 @@ public class FinalPaymentCheckoutMovieService implements IFinalPaymentCheckoutMo
     private final ICinemaService cinemaService;
     private final IFormOfPaymentService formOfPaymentService;
     private final IAdditionalFoodMovieService additionalFoodMovieService;
+    private final IFinalPaymentCheckoutMovieProductRepository finalPaymentCheckoutMovieProductRepository;
+    private final IFinalPaymentCheckoutMovieTicketRepository finalPaymentCheckoutMovieTicketRepository;
 
     @Autowired
     public FinalPaymentCheckoutMovieService(IFinalPaymentCheckoutMovieRepository finalPaymentCheckoutMovieRepository,
-                                            IPaymentCheckoutMovieTicketProductRepository paymentCheckoutMovieTicketProductRepository,
+                                            @Lazy IPaymentCheckoutMovieTicketProductService paymentCheckoutMovieTicketProductService,
                                             IFinalPaymentCheckoutMovieTicketService finalPaymentCheckoutMovieTicketService,
                                             IFinalPaymentCheckoutMovieProductService finalPaymentCheckoutMovieProductService,
                                             IUserManagementService userManagementService, IMovieService movieService,
                                             ICinemaService cinemaService, IFormOfPaymentService formOfPaymentService,
-                                            IAdditionalFoodMovieService additionalFoodMovieService) {
+                                            IAdditionalFoodMovieService additionalFoodMovieService, IFinalPaymentCheckoutMovieProductRepository finalPaymentCheckoutMovieProductRepository,
+                                            IFinalPaymentCheckoutMovieTicketRepository finalPaymentCheckoutMovieTicketRepository) {
         this.finalPaymentCheckoutMovieRepository = finalPaymentCheckoutMovieRepository;
-        this.paymentCheckoutMovieTicketProductRepository = paymentCheckoutMovieTicketProductRepository;
+        this.paymentCheckoutMovieTicketProductService = paymentCheckoutMovieTicketProductService;
         this.finalPaymentCheckoutMovieTicketService = finalPaymentCheckoutMovieTicketService;
         this.finalPaymentCheckoutMovieProductService = finalPaymentCheckoutMovieProductService;
         this.userManagementService = userManagementService;
@@ -39,6 +44,40 @@ public class FinalPaymentCheckoutMovieService implements IFinalPaymentCheckoutMo
         this.cinemaService = cinemaService;
         this.formOfPaymentService = formOfPaymentService;
         this.additionalFoodMovieService = additionalFoodMovieService;
+        this.finalPaymentCheckoutMovieProductRepository = finalPaymentCheckoutMovieProductRepository;
+        this.finalPaymentCheckoutMovieTicketRepository = finalPaymentCheckoutMovieTicketRepository;
+    }
+
+    @Override
+    @Transactional
+    public ResultService<List<FinalPaymentCheckoutMovieDTO>> getByUserIdFinalPaymentCheckoutMovieIds(UUID userId) {
+        try {
+            var finalPaymentCheckoutMovieList = finalPaymentCheckoutMovieRepository.getByUserIdFinalPaymentCheckoutMovieIds(userId);
+
+            if(finalPaymentCheckoutMovieList == null){
+                return ResultService.Fail("not found");
+            }
+
+            return ResultService.Ok(finalPaymentCheckoutMovieList);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResultService<List<FinalPaymentCheckoutMovieDTO>> getByUserIdFinalPaymentCheckoutMovieInfo(UUID userId) {
+        try {
+            var finalPaymentCheckoutMovieList = finalPaymentCheckoutMovieRepository.getByUserIdFinalPaymentCheckoutMovieInfo(userId);
+
+            if(finalPaymentCheckoutMovieList == null){
+                return ResultService.Fail("not found");
+            }
+
+            return ResultService.Ok(finalPaymentCheckoutMovieList);
+        }catch (Exception ex){
+            return ResultService.Fail(ex.getMessage());
+        }
     }
 
     @Transactional
@@ -125,12 +164,20 @@ public class FinalPaymentCheckoutMovieService implements IFinalPaymentCheckoutMo
                         var paymentCheckoutMovieTicketProduct = new PaymentCheckoutMovieTicketProduct(idPaymentCheckoutMovieTicketProduct, finalPaymentCheckoutMovieCreated,
                                 createdFinalTicket, createdFinalProduct);
 
-                        var resultCreated = paymentCheckoutMovieTicketProductRepository.create(paymentCheckoutMovieTicketProduct);
-                    }else {
-                        var paymentCheckoutMovieTicketProduct = new PaymentCheckoutMovieTicketProduct(idPaymentCheckoutMovieTicketProduct, finalPaymentCheckoutMovieCreated,
-                                createdFinalTicket, null);
+                        var resultCreated = paymentCheckoutMovieTicketProductService.create(paymentCheckoutMovieTicketProduct);
 
-                        var resultCreated = paymentCheckoutMovieTicketProductRepository.create(paymentCheckoutMovieTicketProduct);
+                        if(!resultCreated.IsSuccess)
+                            return ResultService.Fail(resultCreated.Message);
+                    }else {
+                        var finalPaymentCheckoutMovieProduct = finalPaymentCheckoutMovieProductRepository.getFinalPaymentMovieProductNULL();
+
+                        var paymentCheckoutMovieTicketProduct = new PaymentCheckoutMovieTicketProduct(idPaymentCheckoutMovieTicketProduct, finalPaymentCheckoutMovieCreated,
+                                createdFinalTicket, finalPaymentCheckoutMovieProduct);
+
+                        var resultCreated = paymentCheckoutMovieTicketProductService.create(paymentCheckoutMovieTicketProduct);
+
+                        if(!resultCreated.IsSuccess)
+                            return ResultService.Fail(resultCreated.Message);
                     }
                 }else {
                     var objProduct = (i < objProductDTOs.size()) ? objProductDTOs.get(i) : null;
@@ -153,10 +200,15 @@ public class FinalPaymentCheckoutMovieService implements IFinalPaymentCheckoutMo
 
                         var createdFinalProduct = resultCreatedMovieProduct.Data;
 
-                        var paymentCheckoutMovieTicketProduct = new PaymentCheckoutMovieTicketProduct(idPaymentCheckoutMovieTicketProduct, finalPaymentCheckoutMovieCreated,
-                                null, createdFinalProduct);
+                        var finalPaymentCheckoutMovieTicket = finalPaymentCheckoutMovieTicketRepository.getFinalPaymentMovieTicketNULL();
 
-                        var resultCreated = paymentCheckoutMovieTicketProductRepository.create(paymentCheckoutMovieTicketProduct);
+                        var paymentCheckoutMovieTicketProduct = new PaymentCheckoutMovieTicketProduct(idPaymentCheckoutMovieTicketProduct, finalPaymentCheckoutMovieCreated,
+                                finalPaymentCheckoutMovieTicket, createdFinalProduct);
+
+                        var resultCreated = paymentCheckoutMovieTicketProductService.create(paymentCheckoutMovieTicketProduct);
+
+                        if(!resultCreated.IsSuccess)
+                            return ResultService.Fail(resultCreated.Message);
                     }
                 }
             }

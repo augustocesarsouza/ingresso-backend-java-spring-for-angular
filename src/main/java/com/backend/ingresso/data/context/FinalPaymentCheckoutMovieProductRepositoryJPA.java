@@ -11,10 +11,10 @@ import java.util.UUID;
 
 @Repository
 public interface FinalPaymentCheckoutMovieProductRepositoryJPA extends JpaRepository<FinalPaymentCheckoutMovieProduct, UUID> {
-    @Query("SELECT new com.backend.ingresso.application.dto." +
-            "UserPermissionDTO(up.Id, new com.backend.ingresso.application.dto.UserDTO(up.User.Id), new com.backend.ingresso.application.dto." +
-            "PermissionDTO(null, up.Permission.VisualName, up.Permission.PermissionName)) " +
-            "FROM UserPermission AS up " +
-            "WHERE up.User.Id = :idUser")
-    List<UserPermissionDTO> getAllPermissionUser(UUID idUser); // MUDAR ISSO
+//    @Query("SELECT new com.backend.ingresso.application.dto." +
+//            "UserPermissionDTO(up.Id, new com.backend.ingresso.application.dto.UserDTO(up.User.Id), new com.backend.ingresso.application.dto." +
+//            "PermissionDTO(null, up.Permission.VisualName, up.Permission.PermissionName)) " +
+//            "FROM FinalPaymentCheckoutMovieProduct AS fpmp " +
+//            "WHERE fpmp.Id = :id")
+//    FinalPaymentCheckoutMovieProduct getFinalPaymentMovieProductNULL(UUID id); // MUDAR ISSO
 }

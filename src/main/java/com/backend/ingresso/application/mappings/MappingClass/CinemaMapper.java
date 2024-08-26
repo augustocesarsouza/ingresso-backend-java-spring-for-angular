@@ -13,8 +13,7 @@ public class CinemaMapper implements ICinemaMapper {
         if(cinema == null)
             return null;
 
-        return new CinemaDTO(cinema.getId(), cinema.getNameCinema(), cinema.getDistrict(),
-                cinema.getRanking());
+        return new CinemaDTO(cinema.getId(), cinema.getNameCinema(), cinema.getDistrict());
     }
 
     @Override
@@ -22,8 +21,7 @@ public class CinemaMapper implements ICinemaMapper {
         if(cinemaDTO == null)
             return null;
 
-        return new Cinema(cinemaDTO.getId(), cinemaDTO.getNameCinema(), cinemaDTO.getDistrict(),
-                cinemaDTO.getRanking());
+        return new Cinema(cinemaDTO.getId(), cinemaDTO.getNameCinema(), cinemaDTO.getDistrict());
     }
 
     @Override
@@ -32,6 +30,6 @@ public class CinemaMapper implements ICinemaMapper {
             return null;
 
         return new Cinema(cinemaCreateDTO.getId(), cinemaCreateDTO.getNameCinema(),
-                cinemaCreateDTO.getDistrict(), cinemaCreateDTO.getRanking());
+                cinemaCreateDTO.getDistrict());
     }
 }

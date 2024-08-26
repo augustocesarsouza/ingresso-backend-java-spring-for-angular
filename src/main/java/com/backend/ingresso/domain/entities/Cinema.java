@@ -19,19 +19,15 @@ public class Cinema {
     @Column(name = "district")
     @JsonProperty("district")
     private String District;
-    @Column(name = "ranking")
-    @JsonProperty("ranking")
-    private String Ranking;
     @OneToMany(mappedBy = "cinema", cascade = CascadeType.REMOVE)
     private List<MovieRegionTicketsPurchesed> movieRegionTicketsPurcheseds;
     @OneToMany(mappedBy = "cinema", cascade = CascadeType.REMOVE)
     private List<CinemaMovie> cinemaMovies;
 
-    public Cinema(UUID id, String nameCinema, String district, String ranking) {
+    public Cinema(UUID id, String nameCinema, String district) {
         Id = id;
         NameCinema = nameCinema;
         District = district;
-        Ranking = ranking;
     }
 
     public Cinema() {
@@ -47,9 +43,5 @@ public class Cinema {
 
     public String getDistrict() {
         return District;
-    }
-
-    public String getRanking() {
-        return Ranking;
     }
 }

@@ -1,11 +1,13 @@
 package com.backend.ingresso.data.repositories;
 
+import com.backend.ingresso.application.dto.FinalPaymentCheckoutMovieDTO;
 import com.backend.ingresso.data.context.FinalPaymentCheckoutMovieJPA;
 import com.backend.ingresso.domain.entities.*;
 import com.backend.ingresso.domain.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -16,7 +18,20 @@ public class FinalPaymentCheckoutMovieRepository implements IFinalPaymentCheckou
         this.finalPaymentCheckoutMovieJPA = finalPaymentCheckoutMovieJPA;
     }
 
-    @Transactional
+    @Override
+    public List<FinalPaymentCheckoutMovieDTO> getByUserIdFinalPaymentCheckoutMovieIds(UUID userId) {
+        var finalPaymentCheckoutMovieCreated = finalPaymentCheckoutMovieJPA.getByUserIdFinalPaymentCheckoutMovieIds(userId);
+
+        return finalPaymentCheckoutMovieCreated;
+    }
+
+    @Override
+    public List<FinalPaymentCheckoutMovieDTO> getByUserIdFinalPaymentCheckoutMovieInfo(UUID userId) {
+        var finalPaymentCheckoutMovieCreated = finalPaymentCheckoutMovieJPA.getByUserIdFinalPaymentCheckoutMovieInfo(userId);
+
+        return finalPaymentCheckoutMovieCreated;
+    }
+
     @Override
     public FinalPaymentCheckoutMovie create(FinalPaymentCheckoutMovie finalPaymentCheckoutMovie) {
         var finalPaymentCheckoutMovieCreated = finalPaymentCheckoutMovieJPA.save(finalPaymentCheckoutMovie);

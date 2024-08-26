@@ -1,6 +1,6 @@
 package com.backend.ingresso.data.context;
 
-import com.backend.ingresso.application.dto.UserPermissionDTO;
+import com.backend.ingresso.application.dto.*;
 import com.backend.ingresso.domain.entities.FinalPaymentCheckoutMovie;
 import com.backend.ingresso.domain.entities.PaymentCheckoutMovieTicketProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,14 +12,16 @@ import java.util.UUID;
 
 @Repository
 public interface PaymentCheckoutMovieTicketProductJPA extends JpaRepository<PaymentCheckoutMovieTicketProduct, UUID> {
-    @Query("SELECT new com.backend.ingresso.domain.entities." +
-            "PaymentCheckoutMovieTicketProduct(null, null, new com.backend.ingresso.domain.entities." +
-            "FinalPaymentCheckoutMovieTicket(null, new com.backend.ingresso.domain.entities.FormOfPayment(null, pcmtp.FinalPaymentCheckoutMovieTicket.FormOfPayment.FormName, null, null, null), " +
-            "pcmtp.FinalPaymentCheckoutMovieTicket.QuantityTicket), new com.backend.ingresso.domain.entities.FinalPaymentCheckoutMovieProduct(null, " +
-            "new com.backend.ingresso.domain.entities.AdditionalFoodMovie(null, pcmtp.FinalPaymentCheckoutMovieProduct.AdditionalFoodMovie.Title, null, null, null, null, null, null), pcmtp.FinalPaymentCheckoutMovieProduct.QuantityProduct)) " +
+    @Query("SELECT new com.backend.ingresso.application.dto." +
+            "PaymentCheckoutMovieTicketProductDTO(null, new com.backend.ingresso.application.dto.FinalPaymentCheckoutMovieDTO(pcmtp.FinalPaymentCheckoutMovie.Id), new com.backend.ingresso.application.dto." +
+            "FinalPaymentCheckoutMovieTicketDTO(null, new com.backend.ingresso.application.dto.FormOfPaymentDTO(null, pcmtp.FinalPaymentCheckoutMovieTicket.FormOfPayment.FormName, null, null, null), " +
+            "pcmtp.FinalPaymentCheckoutMovieTicket.QuantityTicket), new com.backend.ingresso.application.dto.FinalPaymentCheckoutMovieProductDTO(null, " +
+            "new com.backend.ingresso.application.dto.AdditionalFoodMovieDTO(null, finalProduct.AdditionalFoodMovie.Title, null, null, null, null, null, null), pcmtp.FinalPaymentCheckoutMovieProduct.QuantityProduct)) " +
             "FROM PaymentCheckoutMovieTicketProduct AS pcmtp " +
+            "LEFT JOIN pcmtp.FinalPaymentCheckoutMovieProduct finalProduct " +
             "WHERE pcmtp.FinalPaymentCheckoutMovie.Id = :paymentCheckoutMovieTicketId")
-    List<PaymentCheckoutMovieTicketProduct> getInfoAboutBayFinalOfTheUser(UUID paymentCheckoutMovieTicketId);
+    List<PaymentCheckoutMovieTicketProductDTO> getInfoAboutBayFinalOfTheUser(UUID paymentCheckoutMovieTicketId);
+    // Ticket e Product que estiver "null" e algum deles vai ter uma string "só retirnar porque nao deu para nao colocar sem colocar essa string null"
 
 // PaymentCheckoutMovieTicketProduct(UUID id, FinalPaymentCheckoutMovie finalPaymentCheckoutMovie,
 //                                  FinalPaymentCheckoutMovieTicket finalPaymentCheckoutMovieTicket,
